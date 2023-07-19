@@ -16,12 +16,13 @@ def dist_line_point(point, query):
     distanze = []
     distanze = np.zeros((998, 998))
 
-    for i in range(len(point[0])):
-        for o in range(len(point[0])):
+    for i in range(len(point[1])):
+        for o in range(len(point[1])):
             den = query[0] * query[0] + query[1] * query[1]
             num = query[0] * point[0][0, i] + query[1] * point[1][o, 0]
-            d = point[0][0, i] - (query[0] * num / den) + point[1][o, 0] - (query[1] * num / den)
-            d = d * d
+            d = (point[0][0, i] - (query[0] * num / den)) * (point[0][0, i] - (query[0] * num / den)) + \
+                (point[1][o, 0] - (query[1] * num / den)) * (point[1][o, 0] - (query[1] * num / den))
+
             distanze[i, o] = np.sqrt(d)
 
     return np.array(distanze)
@@ -33,7 +34,7 @@ if __name__ == "__main__":
 
 
     def score(q, alpha):
-        b = 0.66
+        b = q
         q1 = 0.5
         q2 = 1 - q1
         point = [xx, yy]
