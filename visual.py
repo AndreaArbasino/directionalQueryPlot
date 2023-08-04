@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button
@@ -50,28 +49,83 @@ if __name__ == "__main__":
     """def score(q, alpha):
         return q * xx + (1 - q) * yy"""
 
-    init_q = 0.66
     init_alpha = 1
+    init_beta = 4/6
 
     x = np.linspace(0, 1, num=1000)[1:-1]
     y = np.linspace(0, 1, num=1000)[1:-1]
     xx, yy = np.meshgrid(x, y, sparse=True)
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(5, 5))
 
-    plt.contourf(x, y, score(init_q, init_alpha))
-    plt.subplots_adjust(left=0.05, bottom=0.25)
+    # Perceptually Uniform Colormaps (Recommended for scientific visualization)
+    # -----------------------------------------------------------------------
+    # Viridis
+    # Plasma
+    # Inferno
+    # Magma
+    # Cividis
+
+    # Diverging Colormaps
+    # -----------------------------------------------------------------------
+    # RdBu (Red-Blue)
+    # RdYlBu (Red-Yellow-Blue)
+    # Spectral
+
+    # Qualitative Colormaps
+    # -----------------------------------------------------------------------
+    # Accent
+    # Dark2
+    # Set1
+    # Set2
+    # Set3
+    # Pastel1
+    # Pastel2
+
+    # Sequential Colormap (Historical, Not recommended for scientific visualization)
+    # -----------------------------------------------------------------------
+    # Hot
+
+    colormap = 'viridis'
+    plt.contourf(x, y, score(init_beta, init_alpha), cmap=colormap)
+    #plt.contourf(x, y, score(init_beta, init_alpha))
+    plt.subplots_adjust(right=0.96, top=0.99, bottom=0.04, left=0.1)
     plt.axis('scaled')
+
+    # Set the x-axis and y-axis ticks and limits
+    plt.xticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+    plt.yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+
+    # Add labels to the axes using LaTeX notation for subscripts
+    plt.xlabel("$t_1$", fontsize=10, labelpad=-5)  # Adjust labelpad as needed
+    plt.ylabel("$t_2$", fontsize=10, labelpad=-5)  # Adjust labelpad as needed
+
+    # Save the graph-only figure as a PDF
+    plt.savefig("q_plot_alpha_" + str(init_alpha.__round__(2)) + "_beta_" + str(init_beta.__round__(2)) + "_" + colormap + ".png")
+    plt.plot()
+
+    # Copy the graph plot to the new figure
+    plt.contourf(x, y, score(init_beta, init_alpha), cmap=colormap)
+    plt.subplots_adjust(left=0.1, bottom=0.25)
+    plt.axis('scaled')
+    plt.xticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+    plt.yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+    plt.xlabel("$t_1$", fontsize=10, labelpad=-5)
+    plt.ylabel("$t_2$", fontsize=10, labelpad=-5)
     plt.colorbar()
 
     # Make a horizontal slider to control the frequency.
     ax_query = plt.axes([0.25, 0.15, 0.65, 0.03])
-    query_slider = Slider(
+    beta_slider = Slider(
         ax=ax_query,
-        label='Query Coeff',
+        label='Beta',
         valmin=0.00,
         valmax=1.00,
-        valinit=init_q,
+        valinit=init_beta,
     )
 
     # Make a vertically oriented slider to control the amplitude
@@ -87,12 +141,12 @@ if __name__ == "__main__":
 
     # The function to be called anytime a slider's value changes
     def update(val):
-        ax.contourf(x, y, score(query_slider.val, alpha_slider.val))
+        ax.contourf(x, y, score(beta_slider.val, alpha_slider.val))
         fig.canvas.draw()
 
 
     # register the update function with each slider
-    query_slider.on_changed(update)
+    beta_slider.on_changed(update)
     alpha_slider.on_changed(update)
 
     # Create a `matplotlib.widgets.Button` to reset the sliders to initial values.
@@ -101,10 +155,10 @@ if __name__ == "__main__":
 
 
     def reset(event):
-        query_slider.reset()
+        beta_slider.reset()
         alpha_slider.reset()
 
 
     button.on_clicked(reset)
-
+    #plt.tight_layout()
     plt.show()
